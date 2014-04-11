@@ -3,6 +3,13 @@ module Tugboat
     # Ask for user credentials from the command line, then write them out.
     class AskForCredentials < Base
       def call(env)
+        say
+        say "Where do you want to store the .tugboat config file? (default: #{File.dirname(env['config'].path)})"
+        say "When running tugboat it will use the 'nearest' .tugboat file (in current dir or parent dir and so on; it defaults to ~/.tugboat)"
+        config_file_directory = ask("Tugboat config file directory relative to current dir(ex: ./, ~/, /a/random/directory):") || "~/"
+        env['config'].path = File.expand_path ".tugboat", config_file_directory
+        say "OK. I'll write the config in #{env['config'].path}"
+        say
         say "Note: You can get this information from digitalocean.com/api_access", :yellow
         say
         client_key = ask "Enter your client key:"

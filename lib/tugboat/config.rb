@@ -20,7 +20,7 @@ module Tugboat
     DEFAULT_BACKUPS_ENABLED = 'false'
 
     def initialize
-      @path = ENV["TUGBOAT_CONFIG_PATH"] || File.join(File.expand_path("~"), FILE_NAME)
+      @path = ENV["TUGBOAT_CONFIG_PATH"] || find_nearest_config_file || File.join(File.expand_path("~"), FILE_NAME)
       @data = self.load_config_file
     end
 
@@ -31,6 +31,18 @@ module Tugboat
       YAML.load_file(@path)
     rescue Errno::ENOENT
       return
+    end
+
+    def find_nearest_config_file(root=Dir.pwd)
+      config_file = File.expand_path ".tugboat", root
+      return config_file if File.exists?(config_file)
+      return nil if root=='/'
+      find_nearest_config_file(File.expand_path("..", root))
+    end
+
+    def path=(new_path)
+      @path = new_path
+      self.load_config_file
     end
 
     def client_key
