@@ -22,6 +22,32 @@ describe Tugboat::Configuration do
     expect(config.data).to be
   end
 
+  describe "determining which config file to use" do
+    let(:fake_home)   { "#{project_path}/tmp" }
+    let(:config)      { Tugboat::Configuration.instance }
+    before :all do
+      fake_home = "#{project_path}/tmp"
+      FileUtils.mkdir_p "#{fake_home}/test1/test2"
+      FileUtils.touch "#{fake_home}/test1/.tugboat"
+      ENV.stub(:[]).with('HOME').and_return(fake_home)
+      ENV.stub(:[]).and_call_original
+    end
+
+    after :all do
+      fake_home = "#{project_path}/tmp"
+      FileUtils.rm_rf("#{fake_home}/test1") if File.exist?("#{fake_home}/test1")
+    end
+
+    it "should use the file specified in the ENV" do
+      expect(config.reset!.path).to eql ENV["TUGBOAT_CONFIG_PATH"]
+    end
+
+    it "should use the .tugboat file found in a parent dir" do
+      expect(config.find_nearest_config_file("#{fake_home}/test1/test2")).to eql "#{fake_home}/test1/.tugboat"
+    end
+
+  end
+
   describe "the file" do
     let(:client_key)         { "foo" }
     let(:api_key)            { "bar" }

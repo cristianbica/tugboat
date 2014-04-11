@@ -20,7 +20,7 @@ module Tugboat
     DEFAULT_BACKUPS_ENABLED = 'false'
 
     def initialize
-      @path = ENV["TUGBOAT_CONFIG_PATH"] || find_nearest_config_file || File.join(File.expand_path("~"), FILE_NAME)
+      @path =  env_config_file || find_nearest_config_file || default_config_file
       @data = self.load_config_file
     end
 
@@ -33,11 +33,19 @@ module Tugboat
       return
     end
 
+    def env_config_file
+      ENV["TUGBOAT_CONFIG_PATH"]
+    end
+
     def find_nearest_config_file(root=Dir.pwd)
       config_file = File.expand_path ".tugboat", root
       return config_file if File.exists?(config_file)
       return nil if root=='/'
       find_nearest_config_file(File.expand_path("..", root))
+    end
+
+    def default_config_file
+      File.join(File.expand_path("~"), FILE_NAME)
     end
 
     def path=(new_path)
@@ -92,6 +100,7 @@ module Tugboat
     # Re-runs initialize
     def reset!
       self.send(:initialize)
+      self
     end
 
     # Re-loads the config
