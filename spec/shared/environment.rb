@@ -40,6 +40,9 @@ shared_context "spec" do
     # Make them strings so we can manipulate and compare.
     $stderr = StringIO.new
     $stdout = StringIO.new
+
+    # Don't allow changing the path
+    Tugboat::Configuration.instance.stub(:path=).and_return(nil)
   end
 
   after(:each) do

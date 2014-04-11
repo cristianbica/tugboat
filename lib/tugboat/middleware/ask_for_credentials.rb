@@ -7,8 +7,7 @@ module Tugboat
         say "Where do you want to store the .tugboat config file? (default: #{File.dirname(env['config'].path)})"
         say "When running tugboat it will use the 'nearest' .tugboat file (in current dir or parent dir and so on; it defaults to ~/.tugboat)"
         config_file_directory = ask("Tugboat config file directory relative to current dir(ex: ./, ~/, /a/random/directory):") || "~/"
-        env['config'].path = File.expand_path ".tugboat", config_file_directory
-        say "OK. I'll write the config in #{env['config'].path}"
+        say "OK. I'll write the config in #{File.expand_path(".tugboat", config_file_directory)}"
         say
         say "Note: You can get this information from digitalocean.com/api_access", :yellow
         say
@@ -29,6 +28,7 @@ module Tugboat
         backups_enabled = ask "Enter your default for enabling backups (optional, defaults to false):"
 
         # Write the config file.
+        env['config'].path = File.expand_path(".tugboat", config_file_directory)
         env['config'].create_config_file(client_key, api_key, ssh_key_path, ssh_user, ssh_port, region, image, size, ssh_key, private_networking, backups_enabled)
         env['config'].reload!
 
