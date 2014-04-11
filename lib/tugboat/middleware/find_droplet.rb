@@ -72,7 +72,7 @@ module Tugboat
 
           ocean.droplets.list.droplets.each_with_index do |d, i|
             # Check to see if one of the droplet names have the fuzzy string.
-            if d.name.upcase.include? user_fuzzy_name.upcase
+            if d.name=~/#{user_fuzzy_name}/i
               found_droplets << d
             end
           end
